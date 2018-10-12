@@ -11,7 +11,7 @@ class LearnCreate
 
     loop do
       puts 'What is the name of the repository you would like to create?'
-      @repo_name = gets.chomp
+      @repo_name = gets.strip.gsub(/\s+/, '-').downcase
       url = 'https://api.github.com/repos/learn-co-curriculum/' + @repo_name
       encoded_url = URI.encode(url).slice(0, url.length)
 
@@ -42,7 +42,6 @@ class LearnCreate
       case language
       when /^ru/
         create_local_lesson('lab', 'Ruby')
-
       when /^j/
         create_local_lesson('lab', 'JavaScript')
 
@@ -90,6 +89,7 @@ class LearnCreate
     template_path = File.expand_path(gem_template_location) + template_folder
 
     copy_template(template_path)
+    create_dot_learn_file(type, language)
   end
 
   def copy_template(template_path)
@@ -98,33 +98,70 @@ class LearnCreate
     `#{cmd}`
   end
 
+  def create_dot_learn_file(type = 'undefined', language = 'undefined')
+    `
+cd #{@repo_name}
+cat > .learn <<EOL
+tags:
+- #{type}
+languages:
+- #{language}
+    `
+  end
+
+  def cd_into_and(command)
+    "cd #{@repo_name} && #{command}"
+  end
+
   def git_init
-    'git init'
+    cmd = cd_into_and('git init')
+    `#{cmd}`
   end
 
   def git_add
-    'git add .'
+    cmd = cd_into_and('git add .')
+    `#{cmd}`
   end
 
   def git_commit
-    'git commit -m "automated initial commit"'
+    cmd = cd_into_and('git commit -m "automated initial commit"')
+    `#{cmd}`
   end
 
   def git_create
-    "hub create learn-co-curriculum/#{@repo_name}"
+    cmd = cd_into_and("hub create learn-co-curriculum/#{@repo_name}")
+    `#{cmd}`
   end
 
   def git_set_remote
-    "git remote set-url origin https://github.com/learn-co-curriculum/#{@repo_name}"
+    cmd = cd_into_and("git remote set-url origin https://github.com/learn-co-curriculum/#{@repo_name}")
+    `#{cmd}`
   end
 
   def git_push
-    'git push -u origin master'
+    cmd = cd_into_and('git push -u origin master')
+    `#{cmd}`
   end
 
   def create_new_repo
     # must be in a single chain. 'cd' doesn't work the way it would in the shell
-    cmd = "cd #{@repo_name} && #{git_init} && #{git_add} && #{git_commit} && #{git_create} && #{git_set_remote} && #{git_push} && cd .."
-    `#{cmd}`
+    puts ''
+    puts 'Initializing git repository'
+    git_init
+    puts ''
+    puts 'Staging content for commit'
+    git_add
+    puts ''
+    puts 'Creating initial commit'
+    git_commit
+    puts ''
+    puts 'Creating remote learn-co-curriculum repository'
+    git_create
+    puts ''
+    puts 'Setting git remote'
+    git_set_remote
+    puts ''
+    puts 'Pushing to remote'
+    git_push
   end
 end
