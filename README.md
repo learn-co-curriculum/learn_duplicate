@@ -18,7 +18,7 @@ repository on learn-co-curriculum. In the shell:
 - Run `hub create learn-co-curriculum/<whatever name you've chosen>`
   - You should be prompted to sign into GitHub
 - If everything works as expected you should now have an empty
-  learn-co-curriculum repo
+  learn-co-curriculum repo on GitHub
 - Delete the repo. Everything should be set up now.
 
 Install the `learn_create` gem:

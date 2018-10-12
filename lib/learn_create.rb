@@ -61,7 +61,7 @@ class LearnCreate
 
     create_new_repo
     puts ''
-    puts "Repository created. Navigate into #{@repo_name} or open https://github.com/learn-co-curriculum/#{@repo_name} to get started "
+    puts "Repository created. Navigate into #{@repo_name} or open https://github.com/learn-co-curriculum/#{@repo_name} to get started"
   end
 
   private
