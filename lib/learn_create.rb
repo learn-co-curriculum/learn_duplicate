@@ -21,8 +21,7 @@ class LearnCreate
 
       # Will hit rate limint on github is used too much
       check_existing = Faraday.get URI.parse(encoded_url)
-      puts URI.parse(encoded_url)
-      puts check_existing.body
+
       break if check_existing.body.include? '"Not Found"'
 
       puts 'A repository with that name already exists:'
@@ -32,7 +31,7 @@ class LearnCreate
 
     readme = ''
     loop do
-      puts 'Is this a Readme? (Y/n)'
+      puts 'Is this a Readme? (y/n)'
       readme = gets.chomp.downcase
       break if readme =~ /^(y|n)/
       puts 'Please enter yes or no'
@@ -65,7 +64,6 @@ class LearnCreate
 
     end
 
-    cd_into
     create_new_repo
   end
 
@@ -83,68 +81,51 @@ class LearnCreate
     language
   end
 
-  def create_local_lesson(type = 'readme', language)
+  def create_local_lesson(type = 'readme', language = nil)
     puts "Creating #{language} #{type}"
     gem_template_location = File.dirname(__FILE__)
-    template_folder = "/templates/#{type}_template"
-    template_folder = "/templates/#{language}_#{type}_template" if ARGV.length == 2
-    gem_template_path = File.expand_path(template_file) + template_folder
-    copy_template(gem_template_path)
+    template_folder = if !language
+                        "/templates/#{type}_template"
+                      else
+                        "/templates/#{language}_#{type}_template"
+                      end
+    template_path = File.expand_path(gem_template_location) + template_folder
+    copy_template(template_path)
   end
 
-  def create_ruby_lab
-    puts 'Creating Ruby Lab...'
-    template_file = File.dirname(__FILE__)
-    gem_template_path = File.expand_path(template_file) + '/templates/readme_template'
-  end
-
-  # shell commands turned into methods
-  def copy_template(gem_template_path)
-    cmd = "cp -r #{gem_template_path} #{Dir.pwd}/#{@repo_name}"
+  def copy_template(template_path)
+    # copies a template folder from the learn_create gem to a subfolder of the current directory
+    cmd = "cp -r #{template_path} #{Dir.pwd}/#{@repo_name}"
     `#{cmd}`
   end
 
-  def cd_into
-    cmd = "cd #{repo_name}"
-    `#{cmd}`
-  end
-
-  def git_int
-    cmd = 'git init'
-    `#{cmd}`
+  def git_init
+    'git init'
   end
 
   def git_add
-    cmd = 'git add .'
-    `#{cmd}`
+    'git add .'
   end
 
   def git_commit
-    cmd = 'git commit -m "automated initial commit"'
-    `#{cmd}`
+    'git commit -m "automated initial commit"'
   end
 
   def git_create
-    cmd = "hub create learn-co-curriculum/#{@repo_name}"
-    `#{cmd}`
+    "hub create learn-co-curriculum/#{@repo_name}"
   end
 
   def git_set_remote
-    cmd = "git remote set-url origin https://github.com/learn-co-curriculum/#{@repo_name}"
-    `#{cmd}`
+    "git remote set-url origin https://github.com/learn-co-curriculum/#{@repo_name}"
   end
 
   def git_push
-    cmd = 'git push -u origin master'
-    `#{cmd}`
+    'git push -u origin master'
   end
 
   def create_new_repo
-    git_init
-    git_add
-    git_commit
-    git_create
-    git_set_remote
-    git_push
+    # must be in a single chain. 'cd' doesn't work the way it would in the shell
+    cmd = "cd #{@repo_name} && #{git_init} && #{git_add} && #{git_commit} && #{git_create} && #{git_set_remote} && #{git_push} && cd .."
+    `#{cmd}`
   end
 end
