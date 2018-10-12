@@ -6,6 +6,8 @@ gem 'json'
 gem 'require_all'
 gem 'odyssey'
 gem 'awesome_print'
+gem 'faraday'
+gem 'uri'
 
 # Specify your gem's dependencies in readability_score.gemspec
 gemspec

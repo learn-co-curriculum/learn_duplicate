@@ -2,67 +2,149 @@ require 'json'
 require 'require_all'
 require 'odyssey'
 require 'awesome_print'
+require 'faraday'
+require 'uri'
+require 'byebug'
 
 class LearnCreate
   def initialize
-    puts 'test new'
+    puts 'Note: You must have write access to the learn-co-curriculum org on GitHub to use this tool'
+
+    # Checks to see if chosen name already exists as a repository
+    @repo_name = ''
+
+    loop do
+      puts 'What is the name of the repository you would like to create?'
+      @repo_name = gets.chomp
+      url = 'https://api.github.com/repos/learn-co-curriculum/' + @repo_name
+      encoded_url = URI.encode(url).slice(0, url.length)
+
+      # Will hit rate limint on github is used too much
+      check_existing = Faraday.get URI.parse(encoded_url)
+      puts URI.parse(encoded_url)
+      puts check_existing.body
+      break if check_existing.body.include? '"Not Found"'
+
+      puts 'A repository with that name already exists:'
+      puts 'https://github.com/learn-co-curriculum/' + @repo_name
+      puts ''
+    end
+
+    readme = ''
+    loop do
+      puts 'Is this a Readme? (Y/n)'
+      readme = gets.chomp.downcase
+      break if readme =~ /^(y|n)/
+      puts 'Please enter yes or no'
+      puts ''
+    end
+
+    # If not a readme, create language specific lab, otherwise create a standard readme
+    if readme =~ /^n$/
+
+      language = choose_language
+
+      case language
+      when /^ru/
+        create_local_lesson('lab', 'Ruby')
+
+      when /^j/
+        create_local_lesson('lab', 'JavaScript')
+
+      when /^re/
+        create_local_lesson('lab', 'React')
+
+      else
+        puts 'I am sorry, something went wrong, please start over'
+
+      end
+
+    else
+
+      create_local_lesson('readme')
+
+    end
+
+    cd_into
+    create_new_repo
   end
 
-  def self.test
-    puts 'test'
+  private
+
+  def choose_language
+    language = ''
+    loop do
+      puts 'What lab template would you like to use? (Ruby/JavaScript/React)'
+      language = gets.chomp.downcase
+      break if language =~ /^(ru|j|re)/
+      puts 'Please enter Ruby, JavaScript or React, or at minimum, the first two letters:'
+      puts ''
+    end
+    language
+  end
+
+  def create_local_lesson(type = 'readme', language)
+    puts "Creating #{language} #{type}"
+    gem_template_location = File.dirname(__FILE__)
+    template_folder = "/templates/#{type}_template"
+    template_folder = "/templates/#{language}_#{type}_template" if ARGV.length == 2
+    gem_template_path = File.expand_path(template_file) + template_folder
+    copy_template(gem_template_path)
+  end
+
+  def create_ruby_lab
+    puts 'Creating Ruby Lab...'
+    template_file = File.dirname(__FILE__)
+    gem_template_path = File.expand_path(template_file) + '/templates/readme_template'
+  end
+
+  # shell commands turned into methods
+  def copy_template(gem_template_path)
+    cmd = "cp -r #{gem_template_path} #{Dir.pwd}/#{@repo_name}"
+    `#{cmd}`
+  end
+
+  def cd_into
+    cmd = "cd #{repo_name}"
+    `#{cmd}`
+  end
+
+  def git_int
+    cmd = 'git init'
+    `#{cmd}`
+  end
+
+  def git_add
+    cmd = 'git add .'
+    `#{cmd}`
+  end
+
+  def git_commit
+    cmd = 'git commit -m "automated initial commit"'
+    `#{cmd}`
+  end
+
+  def git_create
+    cmd = "hub create learn-co-curriculum/#{@repo_name}"
+    `#{cmd}`
+  end
+
+  def git_set_remote
+    cmd = "git remote set-url origin https://github.com/learn-co-curriculum/#{@repo_name}"
+    `#{cmd}`
+  end
+
+  def git_push
+    cmd = 'git push -u origin master'
+    `#{cmd}`
+  end
+
+  def create_new_repo
+    git_init
+    git_add
+    git_commit
+    git_create
+    git_set_remote
+    git_push
   end
 end
-
-#   def self.check(filename = "README.md")
-#     puts "Checking the contents of #{filename}..."
-#     fh = open filename
-#     content = fh.read
-#     fh.close
-#
-#     average_readability = Odyssey.ari(content, false)
-#     coleman_liau = Odyssey.coleman_liau(content, false)
-#     grade_level = Odyssey.flesch_kincaid_grade_level(content, false)
-#     readability_ease = Odyssey.flesch_kincaid_reading_ease(content, false)
-#     gunning_fog = Odyssey.gunning_fog(content, false)
-#     smog = Odyssey.smog(content, false)
-#     text = Odyssey.fake_formula(content, true)
-#
-#     gender_specific_words = ["he", "she", "him", "her"]
-#       .select { |word|
-#         text["score"]["words"].include?(word)
-#       }
-#
-#     relevant_words = ["readme", "code along", "codealong", "lab", "test"]
-#       .select { |word|
-#         text["score"]["words"].include?(word)
-#       }
-#
-#     irrelevant_words = ["a", "an", "and", "the", "like", "with", "through", "over", "before", "at", "of", "to", "in", "for", "on", "by", "between", "after", "since", "without", "under", "beyond", "near", "above", "off", "down", "except", "about", "learn", "co", "open", "really", "we're" ]
-#     word_hash = {}
-#     text["score"]["words"]
-#         .select {|word| !irrelevant_words.include?(word.downcase)}
-#         .each {|word|
-#           word_hash.key?(word) ? word_hash[word] += 1 :  word_hash[word] = 1
-#         }
-#
-#     puts "Automated Readability Index (1 => Kindergarten, 8 => 7th Grade, 14+ => College Level):"
-#     puts average_readability
-#     puts ""
-#     puts "Coleman Liau Index (1 => Kindergarten, 8 => 7th Grade, 14+ => College Level):"
-#     puts coleman_liau
-#     puts ""
-#     puts "Flesch Kincaid Grade Level (1 => Kindergarten, 8 => 7th Grade, 14+ => College Level):"
-#     puts grade_level
-#     puts ""
-#     puts "Flesch Kincaid Reading Ease (100.0-90.0 => 5th Grade, 80.0-70.0 => 7th Grade, 50.0-30.0 => College Level):"
-#     puts readability_ease
-#     puts ""
-#     puts "Gunning Fog Index (7 => 7th grade, 10 => 10th Grade, 13-16 => College Level):"
-#     puts gunning_fog
-#     puts ""
-#     puts "Smog Index (7 => 7th grade, 10 => 10th Grade, 13-16 => College Level):"
-#     puts smog
-#     puts ""
-#
-#     puts "Gender specific words: #{gender_specific_words}"
-#   end
