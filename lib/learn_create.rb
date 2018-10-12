@@ -78,14 +78,17 @@ class LearnCreate
   end
 
   def create_local_lesson(type = 'readme', language = nil)
-    puts "Creating #{language} #{type}"
+    if !language
+      puts "Creating #{type}..."
+      template_folder = "/templates/#{type}_template"
+    else
+      puts "Creating #{language} #{type}..."
+      template_folder = "/templates/#{language}_#{type}_template"
+    end
+
     gem_template_location = File.dirname(__FILE__)
-    template_folder = if !language
-                        "/templates/#{type}_template"
-                      else
-                        "/templates/#{language}_#{type}_template"
-                      end
     template_path = File.expand_path(gem_template_location) + template_folder
+
     copy_template(template_path)
   end
 
