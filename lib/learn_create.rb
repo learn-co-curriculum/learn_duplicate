@@ -1,10 +1,6 @@
-require 'json'
 require 'require_all'
-require 'odyssey'
-require 'awesome_print'
 require 'faraday'
 require 'uri'
-require 'byebug'
 
 class LearnCreate
   def initialize
