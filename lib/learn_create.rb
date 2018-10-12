@@ -60,6 +60,8 @@ class LearnCreate
     end
 
     create_new_repo
+    puts ''
+    puts "Repository created. Navigate into #{@repo_name} or open https://github.com/learn-co-curriculum/#{@repo_name} to get started "
   end
 
   private
@@ -98,14 +100,14 @@ class LearnCreate
     `#{cmd}`
   end
 
-  def create_dot_learn_file(type = 'undefined', language = 'undefined')
+  def create_dot_learn_file(type = 'undefined', language)
     `
 cd #{@repo_name}
 cat > .learn <<EOL
 tags:
 - #{type}
 languages:
-- #{language}
+- #{language || 'undefined'}
     `
   end
 
