@@ -17,6 +17,10 @@ repository on learn-co-curriculum. In the shell:
 - Create a new, empty folder and navigate into it
 - Run `hub create learn-co-curriculum/<whatever name you've chosen>`
   - You should be prompted to sign into GitHub
+  - **Note:** If you have set up two-factor identification on GitHub, when 
+  prompted for your password, instead of using your normal password, you 
+  need to enter a personal access token. You can create a token in your 
+  GitHub settings page. 
 - If everything works as expected you should now have an empty
   learn-co-curriculum repo
 - Delete the repo. Everything should be set up now.
