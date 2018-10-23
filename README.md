@@ -14,15 +14,18 @@ Once `hub` is installed, you'll need to get it configured before running
 `learn_create`. The best way to do this is to use `hub` once to create a
 repository on learn-co-curriculum. In the shell:
 
-- Create a new, empty folder and navigate into it
+- Create a new, empty folder and `cd` into it
+- `git init` to create an initial git repo
 - Run `hub create learn-co-curriculum/<whatever name you've chosen>`
   - You should be prompted to sign into GitHub
   - **Note:** If you have set up two-factor identification on GitHub, when 
-  prompted for your password, instead of using your normal password, you 
-  need to enter a personal access token. You can create a token in your 
-  GitHub settings page. 
+  prompted for your password, you have two options:
+    - If Github SMS' you a one-time password, use it!
+    - Otherwise, instead of using your normal password, you 
+      need to enter a personal access token. You can create a token in your 
+      GitHub settings page. 
 - If everything works as expected you should now have an empty
-  learn-co-curriculum repo
+  `learn-co-curriculum` repo.
 - Delete the repo. Everything should be set up now.
 
 Install the `learn_create` gem:
