@@ -29,7 +29,7 @@ class LearnCreate
     loop do
       puts 'Is this a Readme? (y/n)'
       readme = gets.chomp.downcase
-      break if readme =~ /^(y|n)/
+      break if readme =~ /^(y|n)/ || readme == ''
       puts 'Please enter yes or no'
       puts ''
     end
@@ -44,13 +44,10 @@ class LearnCreate
         create_local_lesson('lab', 'Ruby')
       when /^j/
         create_local_lesson('lab', 'JavaScript')
-
       when /^re/
         create_local_lesson('lab', 'React')
-
       else
-        puts 'I am sorry, something went wrong, please start over'
-
+        create_local_lesson('readme')
       end
 
     else
@@ -146,7 +143,7 @@ languages:
   end
 
   def create_new_repo
-    # must be in a single chain. 'cd' doesn't work the way it would in the shell
+    # 'cd' doesn't work the way it would in the shell, must be used before every command
     puts ''
     puts 'Initializing git repository'
     git_init

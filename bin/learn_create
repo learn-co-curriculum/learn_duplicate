@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+require 'bundler'
+Bundler.require
 
 require 'learn_create'
 LearnCreate.new

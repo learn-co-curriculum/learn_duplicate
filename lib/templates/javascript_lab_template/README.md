@@ -2,13 +2,14 @@
 
 ## Learning Goals
 
-- SWBATs
+-SWBAT 1
+-SWBAT 2
 
 ## Introduction
 
-### SWBAT 1
+## SWBAT 1
 
-### SWBAT 2
+## SWBAT 2
 
 ## Conclusion
 
