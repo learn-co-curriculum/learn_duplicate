@@ -89,6 +89,7 @@ class LearnCreate
 
     copy_template(template_path)
     create_dot_learn_file(type, language)
+    create_dot_gitignore_file()
   end
 
   def copy_template(template_path)
@@ -105,6 +106,33 @@ tags:
 - #{type}
 languages:
 - #{language || 'undefined'}
+    `
+  end
+
+  def create_dot_gitignore_file
+    `
+cd #{@repo_name}
+cat > .gitignore <<EOL
+.DS_Store
+logs
+*.log
+npm-debug.log*
+pids
+*.pid
+*.seed
+lib-cov
+build/Release
+node_modules
+jspm_packages
+.npm
+.node_repl_history
+.results.json
+/.bundle
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/log/*
+!/log/.keep
+/tmp
     `
   end
 
