@@ -11,5 +11,4 @@ gem 'awesome_print'
 gem 'faraday'
 gem 'uri'
 
-# Specify your gem's dependencies in readability_score.gemspec
-gemspec
+# Specify your gem's dependencies in learn_create.gemspec

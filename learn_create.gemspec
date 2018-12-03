@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'learn_create'
-  s.version = '0.0.16'
-  s.date = '2018-11-08'
+  s.version = '0.0.18'
+  s.date = '2018-11-20'
   s.authors = ['flatironschool']
   s.email = 'maxwell@flatironschool.com'
   s.license = 'MIT'
