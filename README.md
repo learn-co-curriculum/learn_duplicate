@@ -18,18 +18,13 @@ repository on learn-co-curriculum. In the shell:
 - `git init` to create an initial git repo
 - Run `hub create learn-co-curriculum/<whatever name you've chosen>`
   - You should be prompted to sign into GitHub
-  - **Note:** If you have set up two-factor identification on GitHub, when 
-  prompted for your password, you have two options:
+  - **Note:** If you have set up two-factor identification on GitHub, when
+    prompted for your password, you have two options:
     - If Github SMS' you a one-time password, use it!
-    - Otherwise, instead of using your normal password, you 
-      need to enter a personal access token. You can create a token in your 
-      GitHub settings page. 
-- If everything works as expected you should now have an empty
-<<<<<<< HEAD
-  learn-co-curriculum repo on GitHub
-=======
-  `learn-co-curriculum` repo.
->>>>>>> 94a4497837675d07b2f64b68c03cce37f7967c12
+    - Otherwise, instead of using your normal password, you
+      need to enter a personal access token. You can create a token in your
+      GitHub settings page.
+- If everything works as expected you should now have an empty `learn-co-curriculum` repo.
 - Delete the repo. Everything should be set up now.
 
 Install the `learn_create` gem:
