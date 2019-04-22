@@ -50,7 +50,8 @@ class LearnDuplicate
 
     create_new_repo
     puts ''
-    cd_into_and('echo "Repository created."')
+    puts 'To access local folder, `cd` into ' + @repo_name + `/`
+    puts 'Repository available at https://github.com/learn-co-curriculum/' + @repo_name
 
   end
 
