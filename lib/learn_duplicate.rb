@@ -35,11 +35,16 @@ class LearnDuplicate
       puts 'What is the name of the repository you would like to create?'
 
       @repo_name = gets.strip.gsub(/\s+/, '-').downcase
-      url = 'https://api.github.com/repos/learn-co-curriculum/' + @repo_name
-      encoded_url = URI.encode(url).slice(0, url.length)
-      check_existing = Faraday.get URI.parse(encoded_url)
+      if @repo_name.length >= 100
+        puts 'Repository names must be shorter than 100 characters'
+      else
+        url = 'https://api.github.com/repos/learn-co-curriculum/' + @repo_name
+        encoded_url = URI.encode(url).slice(0, url.length)
+        check_existing = Faraday.get URI.parse(encoded_url)
 
-      break if check_existing.body.include? '"Not Found"'
+        break if check_existing.body.include? '"Not Found"'
+      end
+
 
       puts 'A repository with that name already exists:'
       puts 'https://github.com/learn-co-curriculum/' + @repo_name
@@ -50,7 +55,7 @@ class LearnDuplicate
 
     create_new_repo
     puts ''
-    puts 'To access local folder, `cd` into ' + @repo_name + `/`
+    puts 'To access local folder, change directory into ' + @repo_name + '/'
     puts 'Repository available at https://github.com/learn-co-curriculum/' + @repo_name
 
   end
