@@ -1,4 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'learn_create'
-LearnCreate.new
