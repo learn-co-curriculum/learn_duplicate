@@ -46,8 +46,10 @@ Follow the command line prompts for setting up and naming your repository. The
 repo will be duplicated locally and pushed to GitHub. When finished, you can `cd`
 into the local folder or open it on github to start working.
 
+Try using the repository `readme_template` to see the how it works.
+
 ## Resources
 
-- [Hub]
+- [Hub][hub]
 
 [hub]: https://hub.github.com/hub.1.html

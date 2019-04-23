@@ -2,7 +2,6 @@ require 'require_all'
 require 'faraday'
 require 'uri'
 require 'open3'
-require 'pry'
 
 class LearnDuplicate
   def initialize()
@@ -42,13 +41,18 @@ class LearnDuplicate
         encoded_url = URI.encode(url).slice(0, url.length)
         check_existing = Faraday.get URI.parse(encoded_url)
 
-        break if check_existing.body.include? '"Not Found"'
+
+        if check_existing.body.include? '"Not Found"'
+          break
+        else
+          puts 'A repository with that name already exists or something else occurred'
+          puts 'https://github.com/learn-co-curriculum/' + @repo_name
+          puts ''
+        end
       end
 
 
-      puts 'A repository with that name already exists:'
-      puts 'https://github.com/learn-co-curriculum/' + @repo_name
-      puts ''
+
     end
 
 
