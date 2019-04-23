@@ -45,7 +45,7 @@ class LearnDuplicate
         if check_existing.body.include? '"Not Found"'
           break
         else
-          puts 'A repository with that name already exists or something else occurred'
+          puts 'A repository with that name already exists or you may have hit a rate limit'
           puts 'https://github.com/learn-co-curriculum/' + @repo_name
           puts ''
         end
