@@ -8,7 +8,29 @@ class LearnDuplicate
   def initialize(opts={})
     # For non-interactive mode
     if opts[:ni]
-      puts :inside
+      validate_repo = ->(url) do
+        encoded_url = URI.encode(url).slice(0, url.length)
+        check_existing = Faraday.get URI.parse(encoded_url)
+        if check_existing.body.include? '"Not Found"'
+          raise IOError, "Could not connect to #{url}"
+        end
+        url
+      end
+
+      @old_repo = validate_repo.call(GITHUB_ORG + opts[:source_name])
+
+      if opts[:destination].length >= 100
+        raise ArgumentError, 'Repository names must be shorter than 100 characters'
+      end
+
+      @repo_name = opts[:destination]
+
+      create_new_repo
+
+      puts ''
+      puts 'To access local folder, change directory into ' + @repo_name + '/'
+      puts "Repository available at #{GITHUB_ORG}" + @repo_name
+      exit
     end
 
     @repo_name = ''
