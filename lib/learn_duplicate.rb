@@ -25,11 +25,19 @@ class LearnDuplicate
 
       @repo_name = opts[:destination]
 
-      create_new_repo
+      if (!opts[:dryrun])
+        begin
+          create_new_repo
+          puts ''
+          puts 'To access local folder, change directory into ' + @repo_name + '/'
+          puts "Repository available at #{GITHUB_ORG}" + @repo_name
+        rescue => e
+          STDERR.puts(e.message)
+        end
+      else
+        puts "DRY RUN: Would execute copy of: #{@old_repo} to #{@repo_name}"
+      end
 
-      puts ''
-      puts 'To access local folder, change directory into ' + @repo_name + '/'
-      puts "Repository available at #{GITHUB_ORG}" + @repo_name
       exit
     end
 

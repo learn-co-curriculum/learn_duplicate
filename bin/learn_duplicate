@@ -48,6 +48,7 @@ OptionParser.new do |opts|
   opts.on("-v", "--verbose", "Run in verbose mode"){ |v| options[:verbose] = true }
   opts.on("--trimprefix[=OPTIONAL]", "Prefix to remove from <source>; implies --script") { |t| options[:trimprefix] = t }
   opts.on("--newprefix[=OPTIONAL]", "Prefix to prepent to new destination repo name; implies --script")  { |n| options[:newprefix] = n }
+  opts.on("--dry-run", "Do not actually make calls, print info out"){ options[:dryrun] = true }
 end.parse!
 
 # Prefixes imply non-interactivity
