@@ -4,7 +4,11 @@ require 'uri'
 require 'open3'
 
 class LearnDuplicate
-  def initialize()
+  def initialize(opts={})
+    # For non-interactive mode
+    if opts[:ni]
+      puts :inside
+    end
 
     @repo_name = ''
     @old_repo = ''
@@ -50,18 +54,12 @@ class LearnDuplicate
           puts ''
         end
       end
-
-
-
     end
-
-
 
     create_new_repo
     puts ''
     puts 'To access local folder, change directory into ' + @repo_name + '/'
     puts 'Repository available at https://github.com/learn-co-curriculum/' + @repo_name
-
   end
 
   private
