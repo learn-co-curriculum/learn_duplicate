@@ -3,6 +3,8 @@ require 'uri'
 require 'open3'
 
 class LearnDuplicate
+  GITHUB_ORG = 'https://api.github.com/repos/learn-co-curriculum/'
+
   def initialize(opts={})
     # For non-interactive mode
     if opts[:ni]
@@ -18,7 +20,7 @@ class LearnDuplicate
       puts 'What is the name of the repository you would like to copy? Paste exactly as is shown in the URL (i.e. advanced-hashes-hashketball)'
       @old_repo = gets.strip
 
-      url = 'https://api.github.com/repos/learn-co-curriculum/' + @old_repo
+      url = GITHUB_ORG + @old_repo
       encoded_url = URI.encode(url).slice(0, url.length)
       check_existing = Faraday.get URI.parse(encoded_url)
 
@@ -39,7 +41,7 @@ class LearnDuplicate
       if @repo_name.length >= 100
         puts 'Repository names must be shorter than 100 characters'
       else
-        url = 'https://api.github.com/repos/learn-co-curriculum/' + @repo_name
+        url = GITHUB_ORG + @repo_name
         encoded_url = URI.encode(url).slice(0, url.length)
         check_existing = Faraday.get URI.parse(encoded_url)
 
@@ -48,7 +50,7 @@ class LearnDuplicate
           break
         else
           puts 'A repository with that name already exists or you may have hit a rate limit'
-          puts 'https://github.com/learn-co-curriculum/' + @repo_name
+          puts GITHUB_ORG + @repo_name
           puts ''
         end
       end
@@ -57,7 +59,7 @@ class LearnDuplicate
     create_new_repo
     puts ''
     puts 'To access local folder, change directory into ' + @repo_name + '/'
-    puts 'Repository available at https://github.com/learn-co-curriculum/' + @repo_name
+    puts "Repository available at #{GITHUB_ORG}" + @repo_name
   end
 
   private
