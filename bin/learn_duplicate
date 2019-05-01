@@ -42,6 +42,14 @@ OptionParser.new do |opts|
 
     Thus the reader can infer what --trimprefix and --newprefix will do.
 
+    EXAMPLE
+    =======
+
+    learn_duplicate\
+       --trimprefix="ruby-enumerables-"\
+       --newprefix="uci-mod-2-"\
+       https://github.com/learn-co-curriculum/ruby-enumerables-enumerable-family-tree [--dry-run]
+
   EOBANNER
 
   opts.on("--script", "Run in non-interactive mode") { |v| options[:ni] = true }
