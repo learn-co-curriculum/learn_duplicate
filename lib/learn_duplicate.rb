@@ -11,7 +11,6 @@ class LearnDuplicate
 
     @repo_name = ''
     @old_repo = ''
-    @ssh_configured = check_ssh_config
 
     puts 'Note: You must have write access to the learn-co-curriculum org on GitHub to use this tool'
 
@@ -102,7 +101,7 @@ class LearnDuplicate
   end
 
   def git_set_remote
-    remote = @ssh_configured ? "git@github.com:learn-co-curriculum/#{@repo_name}.git" : "https://github.com/learn-co-curriculum/#{@repo_name}"
+    remote = check_ssh_config ? "git@github.com:learn-co-curriculum/#{@repo_name}.git" : "https://github.com/learn-co-curriculum/#{@repo_name}"
     cmd = cd_into_and("git remote set-url origin #{remote}")
     `#{cmd}`
   end
