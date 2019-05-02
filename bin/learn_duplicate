@@ -1,4 +1,94 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
 require 'learn_duplicate'
-LearnDuplicate.new
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = <<-EOBANNER
+    learn_duplicate (for interactive sssion)
+    learn_duplicate --script [opt...optN] <source>
+
+    INTERACTIVE CONTEXTS
+    ====================
+
+    A tool for cloning repositories. You will want the canonical name of a
+    repository e.g.:
+
+    ruby-enumerables-enumerable-family-tree
+
+    You will also want to know the clone name e.g
+
+    snapshot-clone-enumerable-family-tree
+
+    NON-INTERACTIVE CONTEXTS
+    ========================
+
+    learn_duplicate --script --trimprefix "ruby-enumerables-" --newprefix "snapshot-clone-" <source>
+
+    DEFINITION OF SOURCE
+    ====================
+
+    <source> can be anything delimited by / that results in a final identifier
+    at the end. The `.git` substring, if present at the end, will be removed.
+
+    As such:
+
+    https://github.com/learn-co-curriculum/ruby-enumerables-enumerable-family-tree
+
+    git@github.com:learn-co-curriculum/ruby-enumerables-enumerable-family-tree.git
+
+    Both use, as a base: ruby-enumerables-enumerable-family-tree
+
+    Thus the reader can infer what --trimprefix and --newprefix will do.
+
+    EXAMPLE
+    =======
+
+    learn_duplicate\
+       --trimprefix="ruby-enumerables-"\
+       --newprefix="uci-mod-2-"\
+       https://github.com/learn-co-curriculum/ruby-enumerables-enumerable-family-tree [--dry-run]
+
+  EOBANNER
+
+  opts.on("--script", "Run in non-interactive mode") { |v| options[:ni] = true }
+  opts.on("-v", "--verbose", "Run in verbose mode"){ |v| options[:verbose] = true }
+  opts.on("--trimprefix[=OPTIONAL]", "Prefix to remove from <source>; implies --script") { |t| options[:trimprefix] = t }
+  opts.on("--newprefix[=OPTIONAL]", "Prefix to prepent to new destination repo name; implies --script")  { |n| options[:newprefix] = n }
+  opts.on("--dry-run", "Do not actually make calls, print info out"){ options[:dryrun] = true }
+end.parse!
+
+# Prefixes imply non-interactivity
+options[:ni] = !!(options[:trimprefix] || options[:newprefix])
+
+REPO_SOURCE = ARGV[0]
+VERBOSE_FLAG = options[:verbose]
+
+if options[:ni]
+  source_name = REPO_SOURCE.split('/').last.sub(/^(.*).*$/, "\\1")
+  if source_name.index(options[:trimprefix]) == 0
+    puts "Trim prefix is valid " if VERBOSE_FLAG
+  else
+    raise ArgumentError, "The --trimprefix is not left-anchored on the <source>"
+  end
+
+  unless (options[:trimprefix] && options[:newprefix])
+    raise ArgumentError, "If you have trimprefix you want newprefix as well"
+  end
+
+  trimmed_base = source_name.slice(options[:trimprefix].length...)
+  destination = String(options[:newprefix]) + trimmed_base
+
+  puts "Trimmed base: #{trimmed_base}" if VERBOSE_FLAG
+  puts "Destination: #{destination}" if VERBOSE_FLAG
+
+  LearnDuplicate.new(options.merge({
+    source_name: source_name,
+    base: trimmed_base.downcase,
+    destination: destination.downcase
+  }))
+else
+  LearnDuplicate.new
+end
+

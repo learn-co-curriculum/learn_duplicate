@@ -1,14 +1,48 @@
-require 'require_all'
 require 'faraday'
 require 'uri'
 require 'open3'
 
 class LearnDuplicate
-  def initialize()
+  GITHUB_ORG = 'https://api.github.com/repos/learn-co-curriculum/'
+
+  def initialize(opts={})
+    # For non-interactive mode
+    if opts[:ni]
+      validate_repo = ->(url) do
+        encoded_url = URI.encode(url).slice(0, url.length)
+        check_existing = Faraday.get URI.parse(encoded_url)
+        if check_existing.body.include? '"Not Found"'
+          raise IOError, "Could not connect to #{url}"
+        end
+        url
+      end
+
+      @old_repo = validate_repo.call(GITHUB_ORG + opts[:source_name])
+
+      if opts[:destination].length >= 100
+        raise ArgumentError, 'Repository names must be shorter than 100 characters'
+      end
+
+      @repo_name = opts[:destination]
+
+      if (!opts[:dryrun])
+        begin
+          create_new_repo
+          puts ''
+          puts 'To access local folder, change directory into ' + @repo_name + '/'
+          puts "Repository available at #{GITHUB_ORG}" + @repo_name
+        rescue => e
+          STDERR.puts(e.message)
+        end
+      else
+        puts "DRY RUN: Would execute copy of: #{@old_repo} to #{@repo_name}"
+      end
+
+      exit
+    end
 
     @repo_name = ''
     @old_repo = ''
-    @ssh_configured = check_ssh_config
 
     puts 'Note: You must have write access to the learn-co-curriculum org on GitHub to use this tool'
 
@@ -16,7 +50,7 @@ class LearnDuplicate
       puts 'What is the name of the repository you would like to copy? Paste exactly as is shown in the URL (i.e. advanced-hashes-hashketball)'
       @old_repo = gets.strip
 
-      url = 'https://api.github.com/repos/learn-co-curriculum/' + @old_repo
+      url = GITHUB_ORG + @old_repo
       encoded_url = URI.encode(url).slice(0, url.length)
       check_existing = Faraday.get URI.parse(encoded_url)
 
@@ -37,7 +71,7 @@ class LearnDuplicate
       if @repo_name.length >= 100
         puts 'Repository names must be shorter than 100 characters'
       else
-        url = 'https://api.github.com/repos/learn-co-curriculum/' + @repo_name
+        url = GITHUB_ORG + @repo_name
         encoded_url = URI.encode(url).slice(0, url.length)
         check_existing = Faraday.get URI.parse(encoded_url)
 
@@ -46,22 +80,16 @@ class LearnDuplicate
           break
         else
           puts 'A repository with that name already exists or you may have hit a rate limit'
-          puts 'https://github.com/learn-co-curriculum/' + @repo_name
+          puts GITHUB_ORG + @repo_name
           puts ''
         end
       end
-
-
-
     end
-
-
 
     create_new_repo
     puts ''
     puts 'To access local folder, change directory into ' + @repo_name + '/'
-    puts 'Repository available at https://github.com/learn-co-curriculum/' + @repo_name
-
+    puts "Repository available at #{GITHUB_ORG}" + @repo_name
   end
 
   private
@@ -105,7 +133,7 @@ class LearnDuplicate
   end
 
   def git_set_remote
-    remote = @ssh_configured ? "git@github.com:learn-co-curriculum/#{@repo_name}.git" : "https://github.com/learn-co-curriculum/#{@repo_name}"
+    remote = check_ssh_config ? "git@github.com:learn-co-curriculum/#{@repo_name}.git" : "https://github.com/learn-co-curriculum/#{@repo_name}"
     cmd = cd_into_and("git remote set-url origin #{remote}")
     `#{cmd}`
   end
