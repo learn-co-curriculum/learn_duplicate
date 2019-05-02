@@ -18,3 +18,4 @@ jspm_packages
 /log/*
 !/log/.keep
 /tmp
+*.gem
