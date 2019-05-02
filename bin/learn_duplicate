@@ -77,7 +77,7 @@ if options[:ni]
     raise ArgumentError, "If you have trimprefix you want newprefix as well"
   end
 
-  trimmed_base = source_name.slice(options[:trimprefix].length...)
+  trimmed_base = source_name.slice(options[:trimprefix].length..source_name.length)
   destination = String(options[:newprefix]) + trimmed_base
 
   puts "Trimmed base: #{trimmed_base}" if VERBOSE_FLAG
