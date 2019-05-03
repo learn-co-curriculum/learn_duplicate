@@ -125,6 +125,7 @@ class LearnDuplicate
 
   def rename_repo
     cmd = "mv -f #{@old_repo} #{@repo_name}"
+    cd_into_and("git remote rename origin origin-old")
     `#{cmd}`
   end
 
@@ -153,7 +154,7 @@ class LearnDuplicate
     # 'cd' doesn't work the way it would in the shell, must be used before every command
     puts 'Cloning old repository'
     git_clone
-    puts 'Renaming old repository with new name'
+    puts "Renaming old directory with new name: #{@repo_name}"
     rename_repo
     puts ''
     puts 'Creating new remote learn-co-curriculum repository'
