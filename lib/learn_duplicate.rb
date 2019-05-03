@@ -17,7 +17,8 @@ class LearnDuplicate
         url
       end
 
-      @old_repo = validate_repo.call(GITHUB_ORG + opts[:source_name])
+      validate_repo.call(GITHUB_ORG + opts[:source_name])
+      @old_repo = opts[:source_name]
 
       if opts[:destination].length >= 100
         raise ArgumentError, 'Repository names must be shorter than 100 characters'
