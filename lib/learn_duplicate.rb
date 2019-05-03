@@ -142,8 +142,13 @@ class LearnDuplicate
   end
 
   def git_push
-    cmd = cd_into_and('git push -u origin master')
-    `#{cmd}`
+    # Copy `master`, attempt to copy `solution`, but if it's not there, no
+    # complaints
+    cmds = [
+      %q|git push origin 'refs/remotes/origin/master:refs/heads/master' > /dev/null 2>&1|,
+      %q|git push origin 'refs/remotes/origin/solution:refs/heads/solution' > /dev/null 2>&1|
+    ]
+    cmds.each { |cmd| `#{cd_into_and(cmd)}` }
   end
 
   def check_ssh_config
@@ -164,7 +169,7 @@ class LearnDuplicate
     puts 'Setting new git remote based on SSH settings'
     git_set_remote
     puts ''
-    puts 'Pushing to new remote'
+    puts 'Pushing all old-remote branches to new remote'
     git_push
   end
 end
