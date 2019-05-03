@@ -35,7 +35,8 @@ class LearnDuplicate
           STDERR.puts(e.message)
         end
       else
-        puts "DRY RUN: Would execute copy of: #{@old_repo} to #{@repo_name}"
+        daily_use_url = @old_repo.gsub(/(api\.|repos\/)/, '')
+        puts "DRY RUN: Would execute copy of: #{daily_use_url} to #{@repo_name}"
       end
 
       exit
