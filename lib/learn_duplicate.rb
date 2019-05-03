@@ -129,7 +129,8 @@ class LearnDuplicate
     `#{cmd}`
   end
 
-  def git_create
+  def git_create_and_set_new_origin
+    # Creates repo **and** assigns new remote to 'origin' shortname
     cmd = cd_into_and("hub create learn-co-curriculum/#{@repo_name}")
     `#{cmd}`
   end
@@ -158,9 +159,9 @@ class LearnDuplicate
     rename_repo
     puts ''
     puts 'Creating new remote learn-co-curriculum repository'
-    git_create
+    git_create_and_set_new_origin
     puts ''
-    puts 'Setting new git remote'
+    puts 'Setting new git remote based on SSH settings'
     git_set_remote
     puts ''
     puts 'Pushing to new remote'
