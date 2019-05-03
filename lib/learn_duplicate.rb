@@ -17,6 +17,10 @@ class LearnDuplicate
         url
       end
 
+      de_apiify_url = ->(api_url) do
+        api_url.gsub(/(api\.|repos\/)/, '')
+      end
+
       validate_repo.call(GITHUB_ORG + opts[:source_name])
       @old_repo = opts[:source_name]
 
@@ -31,13 +35,12 @@ class LearnDuplicate
           create_new_repo
           puts ''
           puts 'To access local folder, change directory into ' + @repo_name + '/'
-          puts "Repository available at #{GITHUB_ORG}" + @repo_name
+          puts "Repository available at #{de_apiify_url.call(GITHUB_ORG + @repo_name)}"
         rescue => e
           STDERR.puts(e.message)
         end
       else
-        daily_use_url = @old_repo.gsub(/(api\.|repos\/)/, '')
-        puts "DRY RUN: Would execute copy of: #{daily_use_url} to #{@repo_name}"
+        puts "DRY RUN: Would execute copy of: #{de_apiify_url.call(@old_repo)} to #{@repo_name}"
       end
 
       exit
