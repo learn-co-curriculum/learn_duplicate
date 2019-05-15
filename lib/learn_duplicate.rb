@@ -17,7 +17,12 @@ class LearnDuplicate
         url
       end
 
-      @old_repo = validate_repo.call(GITHUB_ORG + opts[:source_name])
+      de_apiify_url = ->(api_url) do
+        api_url.gsub(/(api\.|repos\/)/, '')
+      end
+
+      validate_repo.call(GITHUB_ORG + opts[:source_name])
+      @old_repo = opts[:source_name]
 
       if opts[:destination].length >= 100
         raise ArgumentError, 'Repository names must be shorter than 100 characters'
@@ -30,13 +35,12 @@ class LearnDuplicate
           create_new_repo
           puts ''
           puts 'To access local folder, change directory into ' + @repo_name + '/'
-          puts "Repository available at #{GITHUB_ORG}" + @repo_name
+          puts "Repository available at #{de_apiify_url.call(GITHUB_ORG + @repo_name)}"
         rescue => e
           STDERR.puts(e.message)
         end
       else
-        daily_use_url = @old_repo.gsub(/(api\.|repos\/)/, '')
-        puts "DRY RUN: Would execute copy of: #{daily_use_url} to #{@repo_name}"
+        puts "DRY RUN: Would execute copy of: #{de_apiify_url.call(@old_repo)} to #{@repo_name}"
       end
 
       exit
@@ -125,10 +129,12 @@ class LearnDuplicate
 
   def rename_repo
     cmd = "mv -f #{@old_repo} #{@repo_name}"
+    cd_into_and("git remote rename origin origin-old")
     `#{cmd}`
   end
 
-  def git_create
+  def git_create_and_set_new_origin
+    # Creates repo **and** assigns new remote to 'origin' shortname
     cmd = cd_into_and("hub create learn-co-curriculum/#{@repo_name}")
     `#{cmd}`
   end
@@ -140,8 +146,13 @@ class LearnDuplicate
   end
 
   def git_push
-    cmd = cd_into_and('git push -u origin master')
-    `#{cmd}`
+    # Copy `master`, attempt to copy `solution`, but if it's not there, no
+    # complaints
+    cmds = [
+      %q|git push origin 'refs/remotes/origin/master:refs/heads/master' > /dev/null 2>&1|,
+      %q|git push origin 'refs/remotes/origin/solution:refs/heads/solution' > /dev/null 2>&1|
+    ]
+    cmds.each { |cmd| `#{cd_into_and(cmd)}` }
   end
 
   def check_ssh_config
@@ -153,16 +164,16 @@ class LearnDuplicate
     # 'cd' doesn't work the way it would in the shell, must be used before every command
     puts 'Cloning old repository'
     git_clone
-    puts 'Renaming old repository with new name'
+    puts "Renaming old directory with new name: #{@repo_name}"
     rename_repo
     puts ''
     puts 'Creating new remote learn-co-curriculum repository'
-    git_create
+    git_create_and_set_new_origin
     puts ''
-    puts 'Setting new git remote'
+    puts 'Setting new git remote based on SSH settings'
     git_set_remote
     puts ''
-    puts 'Pushing to new remote'
+    puts 'Pushing all old-remote branches to new remote'
     git_push
   end
 end
